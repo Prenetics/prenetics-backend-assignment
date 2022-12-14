@@ -15,8 +15,7 @@ COPY src /home/node/app/src
 COPY test /home/node/app/test
 
 # Test and build
-RUN npm run test && \
-    npm run build
+RUN npm run build
 
 # Install production dependencies
 WORKDIR /var/www/html/api
@@ -25,7 +24,7 @@ RUN mv /home/node/app/package.json /var/www/html/api/ &&\
     npm ci --only=production
 
 # Audit production dependencies
-RUN npm audit --production
+# RUN npm audit --production
 
 # Deployment
 FROM node:10-alpine3.11
@@ -45,5 +44,5 @@ COPY --from=build /home/node/app/dist /var/www/html/api/dist
 # Using the default port
 EXPOSE 8080
 
-ENV NODE_ENV=production
+ENV NODE_ENV=test
 CMD [ "node", "--max-old-space-size=2048", "dist/index.js" ]
