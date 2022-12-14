@@ -152,16 +152,16 @@
           },
           {
             "in": "query",
-            "name": "page[offset]",
+            "name": "pageNum",
             "required": false,
             "schema": {
               "type": "integer",
-              "minimum": 0
+              "minimum": 1
             }
           },
           {
             "in": "query",
-            "name": "page[limit]",
+            "name": "pageLimit",
             "required": false,
             "schema": {
               "type": "integer",
@@ -184,6 +184,33 @@
             "schema": {
               "type": "string",
               "minLength": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "patientId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "activateDate",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "resultDate",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
             }
           },
           {

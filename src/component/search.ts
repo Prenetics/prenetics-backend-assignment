@@ -120,16 +120,9 @@ export async function search(
             },
             {
                 type: 'profile',
-                id: '47d67686-b77f-47e8-92e4-76f1b5f1bc92',
+                id: '0bf3bd3b-75bc-4540-ba04-a19ab5e9382c',
                 attributes: {
-                    name: 'Michael Caine',
-                },
-            },
-            {
-                type: 'profile',
-                id: '97932431-d7de-48ec-9f51-d0d78170ffe9',
-                attributes: {
-                    name: 'Bruce Lee',
+                    name: 'Andrea Lau',
                 },
             },
             {
@@ -141,11 +134,19 @@ export async function search(
             },
             {
                 type: 'profile',
-                id: '0bf3bd3b-75bc-4540-ba04-a19ab5e9382c',
+                id: '97932431-d7de-48ec-9f51-d0d78170ffe9',
                 attributes: {
-                    name: 'Andrea Lau',
+                    name: 'Bruce Lee',
                 },
             },
+            {
+                type: 'profile',
+                id: '47d67686-b77f-47e8-92e4-76f1b5f1bc92',
+                attributes: {
+                    name: 'Michael Caine',
+                },
+            },
+
         ],
     };
 }

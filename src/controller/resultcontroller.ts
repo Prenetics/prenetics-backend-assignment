@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import moment = require('moment');
 import { getManager, getRepository } from 'typeorm';
 import { logger } from '../component/logger';
 import { search } from '../component/search';
@@ -15,7 +16,8 @@ export const resultController = new class {
             response.status(400).json(errors);
             return;
         }
-        const { org, } = request.params;
+        const { org } = request.params;
+        const {  pageNum, pageLimit, activateDate, resultDate, patientName, patientId } = request.query;
         try {
             const manager = getManager();
             const organisation = await manager.findOne(Organisation, {
@@ -26,16 +28,62 @@ export const resultController = new class {
             if (!organisation) {
                 response.status(404).json({ msg: 'Organisation not found' });
             } else {
-                const result = await search(
+                let result = await search(
                     manager,
                     organisation,
                     request.params,
                 );
+                const pagination = (pageNum: any, pageLimit: any) => {
+                    const startIndex = (+pageNum - 1) * +pageLimit;
+                    const endIndex = +pageNum * +pageLimit;
+
+                    result.data = result.data.slice(startIndex, endIndex);
+                    result.included = result.included.slice(startIndex, endIndex);
+                    // result.meta.total = pageLimit
+                }
+
+                const filter = () => {
+                    if (patientName){
+                        result.included = result.included.filter(data => data.attributes.name === patientName)
+                        let patientIdData = result.included[0]?.id
+                        result.data = result.data.filter(data => data.relationships.profile.data.id === patientIdData)
+                    }
+
+                    if(activateDate){
+                        result.data = result.data.filter(data => moment(data.attributes.activateTime).format("MM/DD/YYYY") === moment(activateDate).format("MM/DD/YYYY"))
+                        if(!result.data.length){
+                            result.included = []
+                        }
+                        for(let i = 0; i < result.data.length; i++){
+                            let patientIdData = result.data[i].relationships.profile.data.id
+                            result.included = result.included.filter(data => data.id === patientIdData)
+                        }
+                    }
+                    if(resultDate){
+                        result.data = result.data.filter(data => moment(data.attributes.resultTime).format("MM/DD/YYYY") === moment(resultDate).format("MM/DD/YYYY"))
+                        if(!result.data.length){
+                            result.included = []
+                        }
+                        for(let i = 0; i < result.data.length; i++){
+                            let patientId = result.data[i].relationships.profile.data.id
+                            result.included = result.included.filter(data => data.id === patientId)
+                        }
+                    }
+
+                    if(patientId){
+                        result.included = result.included.filter(data => data.id === patientId)
+                        result.data = result.data.filter(data => data.relationships.profile.data.id === patientId)
+                    }
+                }
+
+                filter();
+                pagination(pageNum ? pageNum : 1, pageLimit ? pageLimit : 5);
+                
                 response.status(200).json(result);
             }
         } catch (err) {
             logger.error(err.message);
-            response.status(500).json({ msg: 'Something went wrong' });
+            response.status(500).json({ msg: 'Something went wrong', err: err.message });
         }
     }
 
